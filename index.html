@@ -3,159 +3,119 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>10-Ball Betting Odds Calculator</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <title>Display - 10-Ball Betting Odds Calculator</title>
+  <link rel="stylesheet" href="css/display.css">
+  <script src="js/config.js"></script>
+  <script src="js/shared.js"></script>
+  <script src="js/display.js"></script>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>🎱 10-Ball Betting Odds Calculator</h1>
-      <p class="subtitle">Real-time odds calculation for local 10-ball tournaments</p>
+      <h1>🎱 Live Match Display</h1>
+      <p class="subtitle">Real-time odds and betting</p>
     </header>
 
-    <!-- Match Setup Section -->
-    <section class="card" id="setupSection">
-      <h2>Match Setup</h2>
-      <div class="form-group">
-        <label for="playerA">Player A Name</label>
-        <input id="playerA" type="text" placeholder="Enter player A name" />
+    <!-- No Match Section -->
+    <section class="card" id="noMatchSection">
+      <div style="text-align: center; padding: 40px;">
+        <p style="font-size: 1.1rem; color: var(--text-secondary);">No active match</p>
+        <p style="color: var(--text-secondary); margin-top: 8px;">Go to Admin Panel to create a match</p>
+        <button class="btn btn-primary" onclick="goToAdmin()" style="margin-top: 20px;">Create Match</button>
       </div>
-
-      <div class="form-group">
-        <label for="playerB">Player B Name</label>
-        <input id="playerB" type="text" placeholder="Enter player B name" />
-      </div>
-
-      <div class="form-group">
-        <label for="houseCut">House Cut (%)</label>
-        <input id="houseCut" type="number" min="0" max="100" value="10" />
-        <small>Percentage taken by house from total pool</small>
-      </div>
-
-      <div class="form-group">
-        <label for="matchRounds">Match Format</label>
-        <select id="matchRounds">
-          <option value="first-to-5">First to 5</option>
-          <option value="first-to-7">First to 7</option>
-          <option value="first-to-9">First to 9</option>
-          <option value="best-of-11">Best of 11</option>
-        </select>
-      </div>
-
-      <button class="btn btn-primary" onclick="createMatch()">Create / Reset Match</button>
     </section>
 
-    <!-- Betting Section -->
-    <section class="card" id="betSection" style="display: none;">
-      <div class="match-header">
-        <h2 id="matchTitle"></h2>
-        <span class="badge" id="matchFormat"></span>
+    <!-- Match Display Section -->
+    <section class="billiards-display" id="matchDisplaySection" style="display: none;">
+      <!-- Winner Announcement Banner (Top) -->
+      <div class="winner-announcement" id="winnerBanner" style="display: none;">
+        <div id="winnerText"></div>
       </div>
 
-      <div class="odds-display">
-        <div class="odds-card">
-          <div class="odds-label" id="playerALabel">Player A</div>
-          <div class="odds-value" id="oddsA">0.00</div>
-        </div>
-        <div class="odds-separator">VS</div>
-        <div class="odds-card">
-          <div class="odds-label" id="playerBLabel">Player B</div>
-          <div class="odds-value" id="oddsB">0.00</div>
-        </div>
-      </div>
+      <!-- Main 2-Column Layout -->
+      <div class="display-layout">
+        <!-- LEFT PANEL: Match Scoreboard & Status -->
+        <div class="match-scoreboard">
+          <!-- Players Side by Side -->
+          <div class="players-container">
+            <div class="player-section" id="playerASection">
+              <div class="player-photo-container">
+                <img id="playerAPhoto" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect fill='%23e5e7eb' width='120' height='120'/%3E%3Ccircle cx='60' cy='40' r='20' fill='%236b7280'/%3E%3Cpath d='M40 60 Q60 55 80 60 L80 100 Q60 110 40 100 Z' fill='%236b7280'/%3E%3C/svg%3E" alt="Player A" class="player-photo">
+              </div>
+              <div class="player-name" id="displayPlayerAName"></div>
+              <div class="player-score" id="displayScoreA">0</div>
+              <div class="player-status">Score</div>
+            </div>
 
-      <div class="form-section">
-        <h3>Place Bet</h3>
-        <div class="form-group">
-          <label for="bettorName">Bettor Name</label>
-          <input id="bettorName" type="text" placeholder="Enter bettor name" />
-        </div>
+            <div class="match-center">
+              <div class="vs-text">VS</div>
+              <div class="match-format" id="displayMatchFormatCompact"></div>
+            </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="playerChoice">Choose Player</label>
-            <select id="playerChoice"></select>
+            <div class="player-section" id="playerBSection">
+              <div class="player-photo-container">
+                <img id="playerBPhoto" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect fill='%23e5e7eb' width='120' height='120'/%3E%3Ccircle cx='60' cy='40' r='20' fill='%236b7280'/%3E%3Cpath d='M40 60 Q60 55 80 60 L80 100 Q60 110 40 100 Z' fill='%236b7280'/%3E%3C/svg%3E" alt="Player B" class="player-photo">
+              </div>
+              <div class="player-name" id="displayPlayerBName"></div>
+              <div class="player-score" id="displayScoreB">0</div>
+              <div class="player-status">Score</div>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label for="betAmount">Bet Amount</label>
-            <input id="betAmount" type="number" min="0" step="0.01" placeholder="0.00" />
+          <!-- Handicap Instructions (Inside Match Scoreboard) -->
+          <div class="handicap-instructions-inline" id="handicapInstructionsSection" style="display: none;">
+            <div class="handicap-details-inline" id="handicapDetailsContent"></div>
           </div>
         </div>
 
-        <button class="btn btn-success" onclick="addBet()">Add Bet</button>
-      </div>
-    </section>
+        <!-- RIGHT PANEL: Betting Summary -->
+        <div class="betting-panel">
+          <h3>Betting Summary</h3>
+          
+          <div class="betting-summary">
+            <!-- Player A Bets -->
+            <div class="bet-row">
+              <div>
+                <div class="bet-stat-label" id="playerABetLabel"></div>
+                <div class="bet-stat-amount" id="displayTotalBetA">$0.00</div>
+              </div>
+              <div style="text-align: right;">
+                <div class="bet-stat-label">Bettors</div>
+                <div class="bet-stat-value" id="displayCountA">0</div>
+              </div>
+            </div>
 
-    <!-- Bets Table Section -->
-    <section class="card" id="betsCard" style="display: none;">
-      <h2>Active Bets</h2>
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>Bettor</th>
-              <th>Player</th>
-              <th>Amount</th>
-              <th>Odds</th>
-              <th>Potential Payout</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="betsTable"></tbody>
-        </table>
-      </div>
-      <div class="bets-summary">
-        <p><strong>Total Bets:</strong> <span id="totalBets">0</span></p>
-      </div>
-    </section>
+            <!-- Player B Bets -->
+            <div class="bet-row">
+              <div>
+                <div class="bet-stat-label" id="playerBBetLabel"></div>
+                <div class="bet-stat-amount" id="displayTotalBetB">$0.00</div>
+              </div>
+              <div style="text-align: right;">
+                <div class="bet-stat-label">Bettors</div>
+                <div class="bet-stat-value" id="displayCountB">0</div>
+              </div>
+            </div>
 
-    <!-- House Dashboard Section -->
-    <section class="card" id="dashboard" style="display: none;">
-      <h2>📊 House Dashboard</h2>
-      <div class="dashboard-grid">
-        <div class="stat-box">
-          <label>Gross Pool</label>
-          <div class="stat-value" id="grossPool">0.00</div>
+            <!-- Odds -->
+            <div class="odds-row">
+              <div class="odds-stat">
+                <div class="odds-label" id="displayPlayerAOdds"></div>
+                <div class="odds-value" id="displayOddsA">0.00</div>
+              </div>
+              <div class="odds-stat">
+                <div class="odds-label" id="displayPlayerBOdds"></div>
+                <div class="odds-value" id="displayOddsB">0.00</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="stat-box">
-          <label>House Cut (%)</label>
-          <div class="stat-value" id="dashCut">0%</div>
-        </div>
-        <div class="stat-box">
-          <label>House Profit</label>
-          <div class="stat-value highlight" id="houseProfit">0.00</div>
-        </div>
-        <div class="stat-box">
-          <label>Net Pool</label>
-          <div class="stat-value" id="netPool">0.00</div>
-        </div>
-      </div>
-
-      <div class="dashboard-section">
-        <h3>Payout Distribution</h3>
-        <div class="payout-info">
-          <p>If <span id="payoutPlayerA" style="font-weight: bold;"></span> wins:</p>
-          <ul>
-            <li>Total Payout: <span id="payoutTotalA">0.00</span></li>
-            <li>House Profit: <span id="houseProfitA">0.00</span></li>
-          </ul>
-          <p>If <span id="payoutPlayerB" style="font-weight: bold;"></span> wins:</p>
-          <ul>
-            <li>Total Payout: <span id="payoutTotalB">0.00</span></li>
-            <li>House Profit: <span id="houseProfitB">0.00</span></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="button-group">
-        <button class="btn btn-secondary" onclick="exportToExcel()">📥 Export to Excel</button>
-        <button class="btn btn-warning" onclick="resetAll()">🔄 Reset All</button>
       </div>
     </section>
   </div>
 
-  <script src="js/app.js"></script>
+  <footer class="billiards-footer">
+    <p>10-Ball Betting Odds Calculator</p>
+  </footer>
 </body>
 </html>
