@@ -47,11 +47,11 @@ const UIRenderer = {
       DOM.hide('bettorsListCard');
       DOM.hide('summaryCard');
       // Enable create match button when no active match
-      const createBtn = DOM.get('createMatchBtn');
-      if (createBtn) {
-        createBtn.disabled = false;
-        createBtn.style.opacity = '1';
-        createBtn.style.cursor = 'pointer';
+      const headerCreateBtn = document.querySelector('.header-nav button[onclick="openCreateMatchModal()"]');
+      if (headerCreateBtn) {
+        headerCreateBtn.disabled = false;
+        headerCreateBtn.style.opacity = '1';
+        headerCreateBtn.style.cursor = 'pointer';
       }
       return;
     }
@@ -90,11 +90,11 @@ const UIRenderer = {
     }
 
     // Disable create match button when there's an active match
-    const createBtn = DOM.get('createMatchBtn');
-    if (createBtn) {
-      createBtn.disabled = true;
-      createBtn.style.opacity = '0.5';
-      createBtn.style.cursor = 'not-allowed';
+    const headerCreateBtn = document.querySelector('.header-nav button[onclick="openCreateMatchModal()"]');
+    if (headerCreateBtn) {
+      headerCreateBtn.disabled = true;
+      headerCreateBtn.style.opacity = '0.5';
+      headerCreateBtn.style.cursor = 'not-allowed';
     }
 
     // Handle button states
@@ -282,6 +282,8 @@ function closeCreateMatchModal() {
   DOM.clear('modalMatchValue');
   DOM.clear('modalHouseCut');
   DOM.clear('modalHandicapDetails');
+  DOM.clear('modalPlayerAPhotoUrl');
+  DOM.clear('modalPlayerBPhotoUrl');
   DOM.get('modalMatchType').value = 'best-of';
   DOM.get('modalIsHandicapped').checked = false;
   DOM.get('modalHandicapDetailsGroup').style.display = 'none';
@@ -289,6 +291,11 @@ function closeCreateMatchModal() {
   const playerBPhotoInput = DOM.get('modalPlayerBPhoto');
   if (playerAPhotoInput) playerAPhotoInput.value = '';
   if (playerBPhotoInput) playerBPhotoInput.value = '';
+  // Clear previews
+  const previewA = DOM.get('playerAPhotoPreview');
+  const previewB = DOM.get('playerBPhotoPreview');
+  if (previewA) previewA.innerHTML = '';
+  if (previewB) previewB.innerHTML = '';
 }
 
 function submitCreateMatch() {
@@ -334,9 +341,12 @@ function submitCreateMatch() {
     }
   }
 
-  // Read player photos asynchronously
+  // Get player photos from either upload or URL
   const playerAPhotoInput = DOM.get('modalPlayerAPhoto');
+  const playerAPhotoUrl = DOM.getValue('modalPlayerAPhotoUrl');
   const playerBPhotoInput = DOM.get('modalPlayerBPhoto');
+  const playerBPhotoUrl = DOM.getValue('modalPlayerBPhotoUrl');
+  
   let playerAPhoto = null;
   let playerBPhoto = null;
   let photosLoaded = 0;
@@ -344,7 +354,10 @@ function submitCreateMatch() {
 
   // Count photos to load
   if (playerAPhotoInput.files && playerAPhotoInput.files[0]) totalPhotos++;
+  else if (playerAPhotoUrl) totalPhotos++;
+  
   if (playerBPhotoInput.files && playerBPhotoInput.files[0]) totalPhotos++;
+  else if (playerBPhotoUrl) totalPhotos++;
 
   // If no photos, create match immediately
   if (totalPhotos === 0) {
@@ -352,7 +365,7 @@ function submitCreateMatch() {
     return;
   }
 
-  // Read player A photo
+  // Read player A photo from file
   if (playerAPhotoInput.files && playerAPhotoInput.files[0]) {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -363,9 +376,16 @@ function submitCreateMatch() {
       }
     };
     reader.readAsDataURL(playerAPhotoInput.files[0]);
+  } else if (playerAPhotoUrl) {
+    // Use URL directly
+    playerAPhoto = playerAPhotoUrl;
+    photosLoaded++;
+    if (photosLoaded === totalPhotos) {
+      createMatchWithPhotos(playerA, playerB, houseCut, matchType, matchValue, isHandicapped, handicapDetails, playerAPhoto, playerBPhoto);
+    }
   }
 
-  // Read player B photo
+  // Read player B photo from file
   if (playerBPhotoInput.files && playerBPhotoInput.files[0]) {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -376,6 +396,13 @@ function submitCreateMatch() {
       }
     };
     reader.readAsDataURL(playerBPhotoInput.files[0]);
+  } else if (playerBPhotoUrl) {
+    // Use URL directly
+    playerBPhoto = playerBPhotoUrl;
+    photosLoaded++;
+    if (photosLoaded === totalPhotos) {
+      createMatchWithPhotos(playerA, playerB, houseCut, matchType, matchValue, isHandicapped, handicapDetails, playerAPhoto, playerBPhoto);
+    }
   }
 }
 

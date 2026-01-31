@@ -25,11 +25,6 @@
 
     <div class="admin-layout-full">
       <div class="admin-left-full">
-        <!-- Create Match Button -->
-        <section class="admin-card">
-          <button class="btn btn-primary btn-large" id="createMatchBtn" style="display: none;">+ Create New Match</button>
-        </section>
-
         <!-- Betting Section -->
         <section class="admin-card" id="bettingSection" style="display: none;">
           <h2>💰 Place Bet</h2>
@@ -194,21 +189,33 @@
 
       <div class="modal-body">
         <div class="form-group">
-          <label for="modalPlayerA">Player A</label>
-          <div class="player-input-group">
-            <input id="modalPlayerA" type="text" placeholder="Player name" class="player-input" />
-            <input id="modalPlayerAPhoto" type="file" accept="image/*" class="photo-input" />
-            <span class="photo-label">📷</span>
-          </div>
+          <label for="modalPlayerA">Player A Name</label>
+          <input id="modalPlayerA" type="text" placeholder="Enter player name" />
         </div>
 
         <div class="form-group">
-          <label for="modalPlayerB">Player B</label>
-          <div class="player-input-group">
-            <input id="modalPlayerB" type="text" placeholder="Player name" class="player-input" />
-            <input id="modalPlayerBPhoto" type="file" accept="image/*" class="photo-input" />
-            <span class="photo-label">📷</span>
+          <label>Player A Photo (Optional)</label>
+          <div class="photo-input-row">
+            <input id="modalPlayerAPhoto" type="file" accept="image/*" class="photo-file-input" placeholder="Upload image" />
+            <span class="photo-separator">or</span>
+            <input id="modalPlayerAPhotoUrl" type="text" placeholder="Paste image URL" class="photo-url-input" />
           </div>
+          <div id="playerAPhotoPreview" class="photo-preview-small"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="modalPlayerB">Player B Name</label>
+          <input id="modalPlayerB" type="text" placeholder="Enter player name" />
+        </div>
+
+        <div class="form-group">
+          <label>Player B Photo (Optional)</label>
+          <div class="photo-input-row">
+            <input id="modalPlayerBPhoto" type="file" accept="image/*" class="photo-file-input" placeholder="Upload image" />
+            <span class="photo-separator">or</span>
+            <input id="modalPlayerBPhotoUrl" type="text" placeholder="Paste image URL" class="photo-url-input" />
+          </div>
+          <div id="playerBPhotoPreview" class="photo-preview-small"></div>
         </div>
 
         <div class="form-row">
@@ -252,6 +259,56 @@
     document.getElementById('modalIsHandicapped').addEventListener('change', function() {
       document.getElementById('modalHandicapDetailsGroup').style.display = this.checked ? 'block' : 'none';
     });
+
+    // Photo file upload previews
+    const photoAInput = document.getElementById('modalPlayerAPhoto');
+    const photoBInput = document.getElementById('modalPlayerBPhoto');
+    const photoAUrlInput = document.getElementById('modalPlayerAPhotoUrl');
+    const photoBUrlInput = document.getElementById('modalPlayerBPhotoUrl');
+
+    if (photoAInput) {
+      photoAInput.addEventListener('change', function() {
+        const preview = document.getElementById('playerAPhotoPreview');
+        if (this.files && this.files[0]) {
+          preview.innerHTML = `<img src="${URL.createObjectURL(this.files[0])}" alt="Player A" class="show">`;
+        } else {
+          preview.innerHTML = '';
+        }
+      });
+    }
+
+    if (photoBInput) {
+      photoBInput.addEventListener('change', function() {
+        const preview = document.getElementById('playerBPhotoPreview');
+        if (this.files && this.files[0]) {
+          preview.innerHTML = `<img src="${URL.createObjectURL(this.files[0])}" alt="Player B" class="show">`;
+        } else {
+          preview.innerHTML = '';
+        }
+      });
+    }
+
+    if (photoAUrlInput) {
+      photoAUrlInput.addEventListener('input', function() {
+        const preview = document.getElementById('playerAPhotoPreview');
+        if (this.value) {
+          preview.innerHTML = `<img src="${this.value}" alt="Player A" class="show" onerror="this.style.display='none'">`;
+        } else {
+          preview.innerHTML = '';
+        }
+      });
+    }
+
+    if (photoBUrlInput) {
+      photoBUrlInput.addEventListener('input', function() {
+        const preview = document.getElementById('playerBPhotoPreview');
+        if (this.value) {
+          preview.innerHTML = `<img src="${this.value}" alt="Player B" class="show" onerror="this.style.display='none'">`;
+        } else {
+          preview.innerHTML = '';
+        }
+      });
+    }
 
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', function() {
