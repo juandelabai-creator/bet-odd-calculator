@@ -8,16 +8,11 @@ yarn-error.log
 .env.local
 .env.*.local
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
+# Configuration & Sensitive Data
+js/config.js
+*.secrets
+*.private
 
-# Build/dist
-dist/
 build/
 
 # OS

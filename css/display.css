@@ -1,0 +1,564 @@
+/* ===================== */
+/* Display Page Styles   */
+/* 10-Ball Betting App   */
+/* ===================== */
+
+:root {
+  --primary: #1a5c3a;
+  --primary-light: #10b981;
+  --primary-dark: #065f46;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --background: #f0fdf4;
+  --surface: #ffffff;
+  --border: #d1fae5;
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: linear-gradient(135deg, var(--background) 0%, #e0f2fe 100%);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* ===================== */
+/* Layout               */
+/* ===================== */
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  width: 75%;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--primary);
+}
+
+header h1 {
+  font-size: 2.2rem;
+  color: var(--primary);
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+header .subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+footer {
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* ===================== */
+/* Winner Announcement   */
+/* ===================== */
+
+.winner-announcement {
+  position: relative;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  border: 3px solid #f59e0b;
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 30px;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
+  animation: winnerPulse 0.8s ease-in-out;
+}
+
+@keyframes winnerPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+#winnerText {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #7c2d12;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 1px;
+}
+
+/* ===================== */
+/* Match Display         */
+/* ===================== */
+
+.billiards-display {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ===================== */
+/* Main Layout - 2 Col   */
+/* ===================== */
+
+.display-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+/* ===================== */
+/* Left Panel - Scoreboard */
+/* ===================== */
+
+.match-scoreboard {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: var(--shadow-md);
+  border: 2px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.players-container {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 15px;
+  align-items: center;
+  width: 100%;
+  justify-items: center;
+}
+
+.player-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.player-section.leading {
+  transform: scale(1.05);
+}
+
+.player-photo-container {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+  border: 3px solid var(--primary-light);
+  overflow: hidden;
+}
+
+.player-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.player-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.player-score {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.player-status {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.match-center {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.vs-text {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.match-format {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+}
+
+.handicap-instructions-inline {
+  width: 100%;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid var(--border);
+}
+
+.handicap-details-inline {
+  background: linear-gradient(135deg, #fef3c7 0%, #fef9e7 100%);
+  border: 2px solid #fcd34d;
+  border-radius: 8px;
+  padding: 15px;
+  color: var(--text-primary);
+  line-height: 1.8;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+/* ===================== */
+/* Right Panel - Betting */
+/* ===================== */
+
+.betting-panel {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: var(--shadow-md);
+  border: 2px solid var(--border);
+}
+
+.betting-panel h3 {
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.betting-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.bet-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 12px;
+  background: linear-gradient(135deg, #f0fdf4 0%, #f9fafb 100%);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.bet-stat-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.bet-stat-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.bet-stat-amount {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.odds-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 15px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fef9e7 100%);
+  border-radius: 8px;
+  border: 2px solid #fcd34d;
+}
+
+.odds-stat {
+  text-align: center;
+}
+
+.odds-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.odds-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #b45309;
+}
+
+/* ===================== */
+/* Cards & Sections      */
+/* ===================== */
+
+.billiards-card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 25px;
+  box-shadow: var(--shadow-md);
+  border: 2px solid var(--border);
+}
+
+.billiards-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+  color: var(--primary);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ===================== */
+/* Handicap Card         */
+/* ===================== */
+
+.handicap-instructions {
+  margin-bottom: 25px;
+}
+
+.handicap-card {
+  background: linear-gradient(135deg, #fef3c7 0%, #fef9e7 100%);
+  border: 2px solid #fcd34d;
+}
+
+.handicap-card h3 {
+  color: #b45309;
+}
+
+.handicap-details {
+  background: rgba(255, 255, 255, 0.7);
+  padding: 15px;
+  border-radius: 8px;
+  color: var(--text-primary);
+  line-height: 1.8;
+  font-size: 0.95rem;
+}
+
+/* ===================== */
+/* Betting Summary Grid  */
+/* ===================== */
+
+.betting-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  gap: 0;
+  align-items: center;
+  text-align: center;
+}
+
+.bet-column {
+  padding: 15px 12px;
+}
+
+.bet-header {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bet-amount {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 8px;
+}
+
+.bet-count {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.bet-divider {
+  width: 1px;
+  height: 60px;
+  background: var(--border);
+}
+
+.pool-column {
+  padding: 12px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fef9e7 100%);
+  border-radius: 8px;
+  border: 1px solid #fcd34d;
+}
+
+.pool-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  font-size: 0.9rem;
+}
+
+.pool-row span:last-child {
+  font-weight: 700;
+  color: #b45309;
+}
+
+/* ===================== */
+/* Odds Grid             */
+/* ===================== */
+
+.odds-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 20px;
+  align-items: center;
+  text-align: center;
+}
+
+.odds-item {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  padding: 20px;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+}
+
+.odds-player {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.odds-value {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.odds-vs {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* ===================== */
+/* Handicap Card         */
+/* ===================== */
+
+.handicap-instructions {
+  margin-bottom: 25px;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+  color: white;
+  border: 2px solid var(--primary);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* ===================== */
+/* Responsive            */
+/* ===================== */
+
+@media (max-width: 1200px) {
+  .container {
+    width: 90%;
+  }
+
+  .display-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .scenarios-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: 95%;
+  }
+
+  .player-score {
+    font-size: 2.5rem;
+  }
+
+  .odds-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .odds-vs {
+    display: none;
+  }
+
+  header h1 {
+    font-size: 1.8rem;
+  }
+}

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel - 10-Ball Betting Odds Calculator</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/shared.js"></script>
+  <script src="js/admin.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header class="admin-header">
+      <h1>🎱 Admin Control Panel</h1>
+      <div class="header-nav">
+        <button class="btn-link" onclick="openCreateMatchModal()">+ Create Match</button>
+        <span class="separator">|</span>
+        <button class="btn-link" onclick="goToDisplay()">View Live Display</button>
+        <span class="separator">|</span>
+        <button class="btn-link" onclick="exportCurrentMatch()">📥 Export Match</button>
+      </div>
+    </header>
+
+    <div class="admin-layout-full">
+      <div class="admin-left-full">
+        <!-- Create Match Button -->
+        <section class="admin-card">
+          <button class="btn btn-primary btn-large" id="createMatchBtn" style="display: none;">+ Create New Match</button>
+        </section>
+
+        <!-- Betting Section -->
+        <section class="admin-card" id="bettingSection" style="display: none;">
+          <h2>💰 Place Bet</h2>
+          
+          <div class="form-group">
+            <label for="bettorName">Bettor Name</label>
+            <input id="bettorName" type="text" placeholder="Enter bettor name" />
+          </div>
+
+          <div class="form-group">
+            <label for="playerChoice">Betting on</label>
+            <select id="playerChoice"></select>
+          </div>
+
+          <div class="form-group">
+            <label for="betAmount">Amount ($)</label>
+            <input id="betAmount" type="number" min="0" step="0.01" placeholder="0.00" />
+          </div>
+
+          <button class="btn btn-success btn-large" id="addBetBtn" onclick="addBet()">Add Bet</button>
+        </section>
+      </div>
+
+      <!-- CENTER: Active Match & Bettors Side by Side -->
+      <div class="admin-center-wrapper">
+        <!-- ACTIVE MATCH -->
+        <section class="admin-card" id="activeMatchSection" style="display: none;">
+          <h2>⚡ Active Match</h2>
+          
+          <div class="match-status-bar">
+            <div class="match-status-item">
+              <span class="label">vs</span>
+              <span class="value" id="matchTitle"></span>
+            </div>
+            <div class="match-status-item">
+              <span class="label">Format</span>
+              <span class="value" id="matchFormat"></span>
+            </div>
+            <div class="match-status-item">
+              <span class="label">Status</span>
+              <span class="value status-badge" id="matchStatus">Active</span>
+            </div>
+          </div>
+
+          <!-- Scoring Controls -->
+          <h3 style="margin-top: 20px; margin-bottom: 12px;">Score Update</h3>
+          <div class="scoring-panel">
+            <div class="player-score-control">
+              <div id="playerAScoreName" class="player-label"></div>
+              <div class="score-controls">
+                <button class="score-btn minus" id="scoreAMinus" onclick="updateScore('A', -1)">−</button>
+                <div class="score-display" id="scoreA">0</div>
+                <button class="score-btn plus" id="scoreAPlus" onclick="updateScore('A', 1)">+</button>
+              </div>
+            </div>
+
+            <div class="vs-divider-vertical">VS</div>
+
+            <div class="player-score-control">
+              <div id="playerBScoreName" class="player-label"></div>
+              <div class="score-controls">
+                <button class="score-btn minus" id="scoreBMinus" onclick="updateScore('B', -1)">−</button>
+                <div class="score-display" id="scoreB">0</div>
+                <button class="score-btn plus" id="scoreBPlus" onclick="updateScore('B', 1)">+</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Match End Options -->
+          <h3 style="margin-top: 20px; margin-bottom: 12px;">Match Status</h3>
+          <div class="button-group">
+            <button class="btn btn-success" id="finishBtn" onclick="completeMatch()">✓ Finish</button>
+            <button class="btn btn-warning" id="noContestBtn" onclick="markNoContest()">⊗ No Contest</button>
+            <button class="btn btn-danger" id="deleteBtn" onclick="deleteMatch()">🗑 Delete</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- RIGHT PANEL: Empty/Reserved -->
+      <div class="admin-right-full">
+        <!-- Reserved for future use -->
+      </div>
+    </div>
+
+    <!-- FULL WIDTH: Summary & Payout -->
+    <section class="admin-card" id="summaryCard" style="display: none;">
+      <h2>💰 Match Summary</h2>
+      
+      <!-- Summary Cards Grid -->
+      <div class="summary-grid" style="margin-bottom: 25px;">
+        <div class="summary-card">
+          <div class="summary-label">Gross Pool</div>
+          <div class="summary-value" id="grossPool">$0.00</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">House Cut %</div>
+          <div class="summary-value" id="houseCutPercent">0%</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">House Income</div>
+          <div class="summary-value" id="houseIncome">$0.00</div>
+        </div>
+      </div>
+
+      <!-- Active Bettors List (Scrollable) -->
+      <div style="margin-top: 25px; margin-bottom: 25px;">
+        <h3 style="margin-bottom: 12px;">👥 Active Bettors</h3>
+        <div class="bettors-scroll-container" id="bettorsListCard" style="display: none; height: 300px;">
+          <div class="bettors-list" id="bettorsListContent">
+            <!-- Bettors will be rendered here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Payout Scenarios -->
+      <div style="margin-top: 20px;">
+        <h3 style="margin-bottom: 12px;">Payout Scenarios</h3>
+        <div class="scenarios-grid">
+          <div class="scenario-card">
+            <div class="scenario-title" id="scenarioWinner1"></div>
+            <div class="scenario-row">
+              <span>Winner Payout:</span>
+              <strong id="scenario1Payout">$0.00</strong>
+            </div>
+            <div class="scenario-row">
+              <span>House Profit:</span>
+              <strong id="scenario1House">$0.00</strong>
+            </div>
+            <div class="scenario-row">
+              <span>House Margin:</span>
+              <strong id="scenario1Margin">0%</strong>
+            </div>
+          </div>
+
+          <div class="scenario-card">
+            <div class="scenario-title" id="scenarioWinner2"></div>
+            <div class="scenario-row">
+              <span>Winner Payout:</span>
+              <strong id="scenario2Payout">$0.00</strong>
+            </div>
+            <div class="scenario-row">
+              <span>House Profit:</span>
+              <strong id="scenario2House">$0.00</strong>
+            </div>
+            <div class="scenario-row">
+              <span>House Margin:</span>
+              <strong id="scenario2Margin">0%</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Create Match Modal -->
+  <div id="createMatchModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>🆕 Create New Match</h2>
+        <button class="modal-close" onclick="closeCreateMatchModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="modalPlayerA">Player A</label>
+          <div class="player-input-group">
+            <input id="modalPlayerA" type="text" placeholder="Player name" class="player-input" />
+            <input id="modalPlayerAPhoto" type="file" accept="image/*" class="photo-input" />
+            <span class="photo-label">📷</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="modalPlayerB">Player B</label>
+          <div class="player-input-group">
+            <input id="modalPlayerB" type="text" placeholder="Player name" class="player-input" />
+            <input id="modalPlayerBPhoto" type="file" accept="image/*" class="photo-input" />
+            <span class="photo-label">📷</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="modalMatchType">Format</label>
+            <select id="modalMatchType" onchange="updateMatchValueLabel()">
+              <option value="best-of">Best of</option>
+              <option value="race-to">Race to</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="modalMatchValue" id="matchValueLabel">Games/Wins</label>
+            <input id="modalMatchValue" type="number" min="1" placeholder="7" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="modalHouseCut">House Cut (%)</label>
+          <input id="modalHouseCut" type="number" min="0" max="100" placeholder="10" />
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="modalIsHandicapped" />
+          <label for="modalIsHandicapped" class="checkbox-label">Handicapped Match</label>
+        </div>
+
+        <div class="form-group" id="modalHandicapDetailsGroup" style="display: none;">
+          <label for="modalHandicapDetails">Handicap Details</label>
+          <textarea id="modalHandicapDetails" placeholder="e.g., Player A gets 2 ball advantage" rows="3"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeCreateMatchModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="submitCreateMatch()">Create Match</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('modalIsHandicapped').addEventListener('change', function() {
+      document.getElementById('modalHandicapDetailsGroup').style.display = this.checked ? 'block' : 'none';
+    });
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Auto-initialize matches folder access if not already done
+      setTimeout(() => {
+        initializeMatchesFolder().then((success) => {
+          if (success) {
+            console.log('✓ Matches folder ready for exports');
+          }
+        });
+      }, 500);
+    });
+  </script>
+</body>
+</html>
+
